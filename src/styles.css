@@ -44,7 +44,31 @@ img {
 }
 
 .page-shell {
-  overflow: hidden;
+  overflow-x: hidden;
+  padding-top: 5.25rem;
+}
+
+.promo-float {
+  position: fixed;
+  top: 0.65rem;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  justify-content: center;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.promo-float .promo-bar {
+  pointer-events: auto;
+  width: min(100%, 28rem);
+  flex-wrap: wrap;
+  border-radius: 999px;
+  box-shadow:
+    0 14px 36px rgba(22, 22, 22, 0.16),
+    0 4px 14px rgba(217, 135, 39, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.28);
 }
 
 .promo-bar {
@@ -52,9 +76,9 @@ img {
   gap: 0.75rem;
   justify-content: center;
   align-items: center;
-  background: var(--color-primary);
+  background: linear-gradient(180deg, #ffb35a 0%, var(--color-primary) 45%, var(--color-primary-dark) 100%);
   color: var(--color-white);
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 1.35rem;
   font-size: 0.95rem;
 }
 
@@ -65,7 +89,7 @@ img {
 .site-header {
   position: sticky;
   top: 0;
-  z-index: 30;
+  z-index: 40;
   background: rgba(255, 255, 255, 0.92);
   backdrop-filter: blur(14px);
   border-bottom: 1px solid rgba(245, 168, 80, 0.15);
@@ -720,9 +744,23 @@ nav a {
 }
 
 @media (max-width: 640px) {
+  .page-shell {
+    padding-top: 6.5rem;
+  }
+
+  .promo-float {
+    top: 0.5rem;
+  }
+
+  .promo-float .promo-bar {
+    width: min(100%, 22rem);
+    padding: 0.65rem 1rem;
+  }
+
   .promo-bar {
     flex-direction: column;
     text-align: center;
+    gap: 0.35rem;
   }
 
   .button,

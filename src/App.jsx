@@ -279,9 +279,11 @@ export default function App() {
 
   return (
     <div className="page-shell">
-      <div className="promo-bar">
-        <span>Promoción activa</span>
-        <strong>Prueba 3 meses gratuitos</strong>
+      <div className="promo-float" role="status" aria-live="polite">
+        <div className="promo-bar">
+          <span>Promoción activa</span>
+          <strong>Prueba 3 meses gratuitos</strong>
+        </div>
       </div>
 
       <header className="site-header">
