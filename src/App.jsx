@@ -56,6 +56,18 @@ const services = [
   'Básculas de camiones',
 ]
 
+const services_images = [
+  "https://images.unsplash.com/photo-1765710475256-1708882da66e?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1771931108186-bf121365e609?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1752324658757-ca9e690772e5?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1637939157373-2198d933afdf?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1684684383508-261dd0e8f467?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1611807527279-f6ac568cd4f8?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1722097981809-042e0467ba12?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1754910567936-45306202302e?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000",
+  "https://images.unsplash.com/photo-1759826350352-c5b0b77729bd?auto=format&fit=crop&fm=jpg&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&ixlib=rb-4.1.0&q=60&w=3000"
+]
+
 const audiences = [
   'Ayuntamientos',
   'Parques naturales',
@@ -156,36 +168,68 @@ function useSeo() {
   }, [])
 }
 
-function TariffTable({ title, columns, rows }) {
+function TariffCard({ row, showExtra }) {
+  const n = Number.parseInt(row.servicios, 10)
+  const serviciosLabel =
+    Number.isFinite(n) && n === 1 ? '1 servicio incluido' : `${row.servicios} servicios incluidos`
+
   return (
-    <div className="tariff-block">
-      <h3>{title}</h3>
-      <div className="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              {columns.map((column) => (
-                <th key={column.key}>{column.label}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((row) => (
-              <tr key={row.tarifa}>
-                {columns.map((column) => (
-                  <td key={`${row.tarifa}-${column.key}`}>{row[column.key]}</td>
-                ))}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+    <article className="tariff-card">
+      <h4 className="tariff-card__name">{row.tarifa}</h4>
+      <p className="tariff-card__ideal">{row.ideal}</p>
+      <span className="tariff-card__badge">{serviciosLabel}</span>
+      <p className="tariff-card__price">
+        {row.precio}
+        <span className="tariff-card__period">/mes</span>
+      </p>
+      {showExtra && row.extra ? (
+        <p className="tariff-card__extra">
+          <span className="tariff-card__extra-label">Servicios adicionales</span>
+          {row.extra}
+        </p>
+      ) : null}
+    </article>
+  )
+}
+
+function TariffCategory({ categoryId, title, description, rows, showExtra }) {
+  const compact = rows.length <= 1
+  const headingId = `tariff-${categoryId}`
+
+  return (
+    <section
+      className={`tariff-category${compact ? ' tariff-category--compact' : ''}`}
+      aria-labelledby={headingId}
+    >
+      <header className="tariff-category__head">
+        <h3 id={headingId}>{title}</h3>
+        {description ? <p className="tariff-category__desc">{description}</p> : null}
+      </header>
+      <div className="tariff-cards">
+        {rows.map((row) => (
+          <TariffCard key={row.tarifa} row={row} showExtra={showExtra} />
+        ))}
       </div>
-    </div>
+    </section>
   )
 }
 
 export default function App() {
   useSeo()
+
+  const serviceItems = useMemo(
+    () =>
+      services.map((label, i) => ({
+        label,
+        imageUrl: (services_images[i] ?? '').trim(),
+      })),
+    [],
+  )
+
+  const [activeServiceIndex, setActiveServiceIndex] = useState(0)
+
+  const activeService = serviceItems[activeServiceIndex]
+  const activeServiceImageUrl = activeService?.imageUrl || undefined
 
   const [formData, setFormData] = useState({
     nombre: '',
@@ -318,12 +362,47 @@ export default function App() {
                 proyectos a medida.
               </p>
             </div>
-            <div className="chip-grid">
-              {services.map((service) => (
-                <span className="chip" key={service}>
-                  {service}
-                </span>
+            <div
+              className="service-picker"
+              role="tablist"
+              aria-label="Servicios que puedes activar"
+            >
+              {serviceItems.map((item, i) => (
+                <button
+                  key={item.label}
+                  type="button"
+                  role="tab"
+                  id={`service-tab-${i}`}
+                  aria-selected={i === activeServiceIndex}
+                  aria-controls="service-preview-panel"
+                  className={`chip chip--service${i === activeServiceIndex ? ' chip--service-active' : ''}`}
+                  onClick={() => setActiveServiceIndex(i)}
+                >
+                  {item.label}
+                </button>
               ))}
+            </div>
+
+            <div
+              className="service-preview"
+              id="service-preview-panel"
+              role="tabpanel"
+              aria-labelledby={`service-tab-${activeServiceIndex}`}
+            >
+              {activeServiceImageUrl ? (
+                <div className="service-preview__frame">
+                  <img
+                    src={activeServiceImageUrl}
+                    alt={`Ilustración: ${activeService.label}`}
+                    loading="lazy"
+                  />
+                </div>
+              ) : (
+                <div className="service-preview__placeholder">
+                  <p>Añade la URL de la imagen en <code>services_images</code> para este servicio.</p>
+                </div>
+              )}
+              <p className="service-preview__caption">{activeService?.label}</p>
             </div>
           </div>
         </section>
@@ -343,7 +422,7 @@ export default function App() {
           <div className="container audience-grid">
             <div>
               <p className="eyebrow">Cliente ideal</p>
-              <h2>Para ayuntamientos y servicio privado que quieran cobrar de forma sencilla</h2>
+              <h2>Para ayuntamientos y empresas que quieran cobrar de forma sencilla</h2>
               <p>
                 Especialmente útil para espacios donde se quiere automatizar el cobro, reducir carga
                 operativa y mejorar la experiencia del usuario final.
@@ -359,59 +438,65 @@ export default function App() {
           </div>
         </section>
 
-        <section className="section" id="tarifas">
+        <section className="section tariffs-section" id="tarifas">
           <div className="container">
             <div className="section-heading left">
               <p className="eyebrow">Tarifas mensuales</p>
-              <h2>Precios claros para publicar y empezar rápido</h2>
-              <p>Basado en el flyer facilitado, con el mismo esquema comercial y precios sin IVA.</p>
-            </div>
-
-            <TariffTable
-              title="Control de Accesos Parques Naturales"
-              columns={[
-                { key: 'tarifa', label: 'Tarifa' },
-                { key: 'ideal', label: 'Ideal para' },
-                { key: 'servicios', label: 'Servicios' },
-                { key: 'precio', label: 'Precio' },
-              ]}
-              rows={tariffs.access}
-            />
-
-            <TariffTable
-              title="Servicios de Caravaning"
-              columns={[
-                { key: 'tarifa', label: 'Tarifa' },
-                { key: 'ideal', label: 'Ideal para' },
-                { key: 'servicios', label: 'Servicios' },
-                { key: 'precio', label: 'Precio' },
-                { key: 'extra', label: 'Extra' },
-              ]}
-              rows={tariffs.caravaning}
-            />
-
-            <TariffTable
-              title="Ticket de Báscula"
-              columns={[
-                { key: 'tarifa', label: 'Tarifa' },
-                { key: 'ideal', label: 'Ideal para' },
-                { key: 'servicios', label: 'Servicios' },
-                { key: 'precio', label: 'Precio' },
-              ]}
-              rows={tariffs.scale}
-            />
-
-            <div className="tariff-notes">
+              <h2>Precios claros para empezar rápido</h2>
               <p>
-                <strong>Comisiones flexibles:</strong> de 0,10 € a 0,15 € + 2% del importe, cuando el
-                cliente no configura su Redsys o el pago se realiza mediante tarjeta física sobre TPV.
-              </p>
-              <p>Precios sin IVA.</p>
-              <p>
-                <strong>Asistencia remota:</strong> 55 €/h para administraciones facturables a final de
-                mes con albaranes.
+                Elige el bloque que encaje con tu espacio: cada tarjeta resume qué incluye, el precio
+                mensual y, en caravaning, cuánto cuesta ampliar servicios.
               </p>
             </div>
+
+            <p className="tariffs-legend">
+              <strong>Todos los importes son mensuales y sin IVA.</strong> En caravaning, el precio base
+              incluye el número de servicios indicado; puedes sumar más al mismo precio unitario.
+            </p>
+
+            <div className="tariffs-stack">
+              <TariffCategory
+                categoryId="accesos"
+                title="Control de accesos (parques naturales)"
+                description="Barrera o acceso controlado con reserva online. Una tarifa sencilla para espacios que priorizan el control de entradas."
+                rows={tariffs.access}
+                showExtra={false}
+              />
+
+              <TariffCategory
+                categoryId="caravaning"
+                title="Servicios de caravaning"
+                description="Packs según cuántos servicios quieras digitalizar (agua, luz, pernocta, etc.). Si creces, pagas solo el extra por servicio adicional."
+                rows={tariffs.caravaning}
+                showExtra
+              />
+
+              <TariffCategory
+                categoryId="bascula"
+                title="Ticket de báscula"
+                description="Cobro en báscula con TPV para tarjeta bancaria. Pensado para pesajes y tráfico de camiones."
+                rows={tariffs.scale}
+                showExtra={false}
+              />
+            </div>
+
+            <ul className="tariff-notes">
+              <li>
+                <strong>Comisiones por pago</strong>
+                <span>
+                  De 0,10 € a 0,15 € + 2% del importe cuando el cliente no configura <a href="https://redsys.es/" target="_blank" rel="noreferrer">Redsys</a> o el cobro va
+                  por tarjeta física en <a href="https://www.adyen.com/es_ES/dispositivos-tpv/" target="_blank" rel="noreferrer">TPV</a>.
+                </span>
+              </li>
+              <li>
+                <strong>IVA</strong>
+                <span>Los precios de las tarjetas no incluyen IVA.</span>
+              </li>
+              <li>
+                <strong>Asistencia remota</strong>
+                <span>55 €/h en administraciones, facturable a final de mes con albaranes.</span>
+              </li>
+            </ul>
           </div>
         </section>
 
@@ -529,11 +614,10 @@ export default function App() {
         <div className="container footer-grid">
           <div>
             <img className="footer-logo" src={logo} alt="SmartPay" />
-            <p>Landing comercial estática para publicar rápido y captar leads de servicios de pago.</p>
           </div>
           <div className="footer-links">
-            <a href="https://app.appsmartpay.com/" target="_blank" rel="noreferrer">
-              Web / app madre
+            <a href="https://app.appsmartpay.com/privacy/legal-notice" target="_blank" rel="noreferrer">
+              Aviso Legal y Política de Privacidad
             </a>
             <a href="https://www.appsmartpay.com/terms-conditions/" target="_blank" rel="noreferrer">
               Términos y condiciones
