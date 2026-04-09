@@ -41,6 +41,13 @@ const tariffs = {
       servicios: '1',
       precio: '19 €',
     },
+    {
+      tarifa: 'QR de Pago',
+      ideal: 'QR de pago para servicios digitales',
+      servicios: '1',
+      precio: '19 €',
+      extra: '9 €/serv.',
+    },
   ],
 }
 
@@ -475,8 +482,8 @@ export default function App() {
 
               <TariffCategory
                 categoryId="bascula"
-                title="Ticket de báscula"
-                description="Cobro en báscula con TPV para tarjeta bancaria. Pensado para pesajes y tráfico de camiones."
+                title="Otros Servicios"
+                description="Cobro de otros servicios como lavaderos, ticketing para eventos, básculas de camiones, etc."
                 rows={tariffs.scale}
                 showExtra={false}
               />
