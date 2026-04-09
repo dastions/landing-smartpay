@@ -622,9 +622,14 @@ export default function App() {
       <footer className="site-footer">
         <div className="container footer-grid">
           <div>
-            <img className="footer-logo" src={logo} alt="SmartPay" />
+            <a href="https://app.appsmartpay.com" target="_blank" rel="noreferrer">
+              <img className="footer-logo" src={logo} alt="SmartPay Caravaning" />
+            </a>
           </div>
           <div className="footer-links">
+            <a href="https://app.appsmartpay.com" target="_blank" rel="noreferrer">
+              Abrir Aplicación
+            </a>
             <a href="https://app.appsmartpay.com/privacy/legal-notice" target="_blank" rel="noreferrer">
               Aviso Legal y Política de Privacidad
             </a>
