@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import LegalPage from './legal/LegalPage.jsx'
 import logo from './assets/logo-smartpay.png'
 import caravaningIllustration from './assets/caravaning-illustration.png'
 
@@ -102,6 +103,28 @@ const benefits = [
     text: 'Empieza con un servicio y amplía a más módulos cuando tu área crezca o cambien las necesidades.',
   },
 ]
+
+function parseLegalRoute(hash) {
+  const path = (hash || '').replace(/^#/, '').replace(/\/+$/, '') || '/'
+  if (path === '/legal' || path.startsWith('/legal/')) {
+    const segments = path.split('/').filter(Boolean)
+    const sub = segments[1]
+    return { name: 'legal', tab: sub === 'privacidad' ? 'privacy' : 'notice' }
+  }
+  return { name: 'home' }
+}
+
+function useHashRoute() {
+  const [hash, setHash] = useState(() => (typeof window !== 'undefined' ? window.location.hash : ''))
+
+  useEffect(() => {
+    const onHashChange = () => setHash(window.location.hash)
+    window.addEventListener('hashchange', onHashChange)
+    return () => window.removeEventListener('hashchange', onHashChange)
+  }, [])
+
+  return useMemo(() => parseLegalRoute(hash), [hash])
+}
 
 function useSeo() {
   useEffect(() => {
@@ -224,6 +247,8 @@ function TariffCategory({ categoryId, title, description, rows, showExtra }) {
 export default function App() {
   useSeo()
 
+  const route = useHashRoute()
+
   const serviceItems = useMemo(
     () =>
       services.map((label, i) => ({
@@ -282,6 +307,10 @@ export default function App() {
     const subject = encodeURIComponent(`Interés comercial SmartPay Caravaning - ${formData.interes}`)
     const body = encodeURIComponent(introMessage)
     window.location.href = `mailto:tienda@dastions.com?subject=${subject}&body=${body}`
+  }
+
+  if (route.name === 'legal') {
+    return <LegalPage tab={route.tab} />
   }
 
   return (
@@ -630,9 +659,8 @@ export default function App() {
             <a href="https://app.appsmartpay.com" target="_blank" rel="noreferrer">
               Abrir Aplicación
             </a>
-            <a href="https://app.appsmartpay.com/privacy/legal-notice" target="_blank" rel="noreferrer">
-              Aviso Legal y Política de Privacidad
-            </a>
+            <a href="#/legal">Aviso legal</a>
+            <a href="#/legal/privacidad">Política de privacidad</a>
             <a href="https://www.appsmartpay.com/terms-conditions/" target="_blank" rel="noreferrer">
               Términos y condiciones
             </a>
